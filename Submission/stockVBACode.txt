@@ -1,0 +1,106 @@
+Sub stockData()
+    
+    For Each ws In ActiveWorkbook.Worksheets
+        
+    Dim stockName As String
+    
+    Dim stockTotal As Double
+    stockTotal = 0
+  
+    Dim i As Double
+
+    Dim summTableRow As Integer
+    summTableRow = 2
+  
+    Dim percentChange As Double
+  
+    Dim yearlyChange As Double
+  
+    Dim stockOpen As Double
+    stockOpen = ws.Cells(2, 3).Value
+  
+    Dim stockClose As Double
+    
+    Dim lastRow As Double
+    lastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+  
+        For i = 2 To lastRow
+    
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+            
+              stockClose = ws.Cells(i, 6).Value
+              stockName = ws.Cells(i, 1).Value
+              stockTotal = stockTotal + ws.Cells(i, 7).Value
+              
+              yearlyChange = (stockClose - stockOpen)
+              percentChange = (yearlyChange / stockOpen)
+              
+              ws.Range("I" & summTableRow).Value = stockName
+              ws.Range("J" & summTableRow).Value = yearlyChange
+              
+                If ws.Range("J" & summTableRow).Value > 0 Then
+                    ws.Range("J" & summTableRow).Interior.ColorIndex = 4
+                Else
+                    ws.Range("J" & summTableRow).Interior.ColorIndex = 3
+                End If
+                
+              ws.Range("K" & summTableRow).Value = percentChange
+              ws.Range("L" & summTableRow).Value = stockTotal
+              
+              summTableRow = summTableRow + 1
+              stockTotal = 0
+              stockOpen = ws.Cells(i + 1, 3).Value
+              
+                If stockOpen = 0 Then
+                    stockOpen = 0.01
+                Else
+                    stockOpen = ws.Cells(i + 1, 3).Value
+                End If
+            
+            Else
+                stockTotal = stockTotal + ws.Cells(i, 7).Value
+            End If
+    
+        Next i
+        
+    Next ws
+    
+    For Each ws In ActiveWorkbook.Worksheets
+
+    Dim Max_Value As Double
+    Dim Min_Value As Double
+    Dim Max_Volume As Double
+    
+    summTableRow = 2
+    
+            Max_Value = Application.WorksheetFunction.Max(ws.Range("K:K").Value)
+            Min_Value = Application.WorksheetFunction.Min(ws.Range("K:K").Value)
+            Max_Volume = Application.WorksheetFunction.Max(ws.Range("L:L").Value)
+            
+            ws.Range("Q2").Value = Max_Value
+            ws.Range("Q3").Value = Min_Value
+            ws.Range("Q4").Value = Max_Volume
+            
+        For i = 2 To lastRow
+                
+            If ws.Cells(i, 11).Value = Max_Value Then
+                ws.Range("P2").Value = ws.Cells(i, 9).Value
+                    
+            End If
+                
+            If ws.Cells(i, 11).Value = Min_Value Then
+                ws.Range("P3").Value = ws.Cells(i, 9).Value
+                    
+            End If
+                
+            If ws.Cells(i, 12).Value = Max_Volume Then
+                ws.Range("P4").Value = ws.Cells(i, 9).Value
+                    
+            End If
+                
+        Next i
+        
+    Next ws
+
+End Sub
+
